@@ -1,0 +1,32 @@
+Set-AdServerSettings -ViewEntireForest $True
+
+# This is because Arbitration mailboxes are created on the root domain by default.
+# Now run:
+
+Get-Mailbox -Arbitration | Ft Name, Database
+
+# Now if you need to remove it and have another database available to home these, run the cmdlet:
+
+Get-Mailbox -Arbitration | Set-Mailbox -Arbitration -Database “Name of the new Database”
+
+# If you want to Move Arbitration to a new mailbox store and the old store is mounted and well,
+
+Get-Mailbox -Arbitration -Database “CurrentDatabase” | New-MoveRequest -TargetDatabase “NewDatabaseName”
+
+#Lets say the database contains mailboxes other than Arbitration and you want to move all of them to a new mailbox store and the old store is mounted and well,
+
+Get-Mailbox -Database “CurrentDatabase” | New-MoveRequest -TargetDatabase “NewDatabaseName”
+
+# If you want to Disable Arbitration mailboxes run:
+
+Get-Mailbox -Arbitration -Database “CurrentDatabase” | Disable-Mailbox -Arbitration
+
+# If you want to remove Arbitration mailboxes run:
+
+Get-Mailbox -Arbitration -Database “CurrentDatabase” | Remove-Mailbox -Arbitration –RemoveLastArbitrationMailboxAllowed
+
+# Now for some reason these Arbitration mailboxes went missing, then find the version of your exchange server using the cmdlet, then download the appropriate service pack and run setup /p
+
+GCM exsetup |%{$_.Fileversioninfo}
+
+# You may also replace the homeMDB value of the Arbitration mailbox with the DN of a mailbox database too.
